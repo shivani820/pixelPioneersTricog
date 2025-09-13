@@ -1,19 +1,22 @@
-    const { MongoClient } = require('mongodb');
+const { MongoClient } = require('mongodb');
 
-    async function connectToDb() {
-      const uri = "mongodb://localhost:27017/doctor-database"; // Replace with your MongoDB URI
-      const client = new MongoClient(uri);
+async function listCollections() {
+  const uri = "mongodb://localhost:27017/test_db"; // Replace with your MongoDB URI
+  const client = new MongoClient(uri);
 
-      try {
-        await client.connect();
-        console.log("Connected to MongoDB");
-        // You can now access the database and collections
-        const db = client.db("yourDatabaseName");
-        // ... perform operations
-      } finally {
-        await client.close();
-        console.log("Disconnected from MongoDB");
-      }
-    }
+  try {
+    await client.connect();
+    console.log("Connected to MongoDB");
 
-    connectToDb();
+    const db = client.db("doctor-database");
+    const collections = await db.listCollections().toArray();
+
+    console.log("Collections in doctor-database:");
+    collections.forEach(collection => console.log(collection.name));
+  } finally {
+    await client.close();
+    console.log("Disconnected from MongoDB");
+  }
+}
+
+listCollections();
