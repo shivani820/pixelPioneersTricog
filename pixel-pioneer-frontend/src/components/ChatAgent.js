@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import './Chatbot.css';
 import DoctorAppointment from '../DoctorAppointment/doctor-appointment';
+import MultiSelectSymptomsCheckboxForm from '../Symtoms/symtoms';
+import { message } from 'antd';
+import axios from 'axios';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -8,6 +11,31 @@ const Chatbot = () => {
   const [step, setStep] = useState(0); // 0: name, 1: email, 2: symptoms, 3: finished
   const [userData, setUserData] = useState({ name: '', email: '', symptoms: '' });
   const [error, setError] = useState('');
+  const [generatedId, setGeneratedId] = useState(null); // State to hold the generated ID
+
+  const getInsertedId = async () => {
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_URL}/configurations/generateId`, {
+      withCredentials: true
+    });
+
+    if (response?.status !== 200) {
+      message.error('Failed to generate ID');
+      return;
+    }
+
+    const data = response.data; // No need for optional chaining after a successful request
+    console.log("🆔 Generated ID:", data);
+
+    // Do something with the ID (e.g., save to state)
+    setGeneratedId(data.id); // If you have a state hook
+
+  } catch (error) {
+    console.error('❌ Error fetching ID:', error);
+    message.error('Error generating ID');
+  }
+};
+
 
   const validateName = (name) => {
     const regex = /^[a-zA-Z\s]+$/;
@@ -25,6 +53,7 @@ const Chatbot = () => {
     if (!input.trim()) return;
 
     setMessages((prevMessages) => [...prevMessages, { text: input, sender: 'user' }]);
+    getInsertedId(); // Call the function to get the ID when user sends a message
 
     switch (step) {
       case 0:
@@ -47,10 +76,10 @@ const Chatbot = () => {
           setMessages((prevMessages) => [...prevMessages, { text: 'That email format is invalid. Please enter a correct email address.', sender: 'bot' }]);
         }
         break;
-      case 2:
+       case 2:
         // No specific validation needed for symptoms, as it's free-form text
         setUserData({ ...userData, symptoms: input });
-        setMessages((prevMessages) => [...prevMessages, { text: 'Thank you for providing your symptoms. A medical agent will be with you shortly.', sender: 'bot' }]);
+        setMessages((prevMessages) => [...prevMessages, { text: <MultiSelectSymptomsCheckboxForm generatedId={generatedId} />, sender: 'bot' }]);
         setStep(3);
         console.log('Final Data:', { ...userData, symptoms: input });
         break;

@@ -1,35 +1,46 @@
-const express = require('express')
-const { connectToDb } = require('./server')
-const configRoutes = require('./route')
+const express = require('express');
+const cors = require('cors');
+const { connectToDb } = require('./server');
+const configRoutes = require('./route');
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3001;
 
-app.use(express.json()) // JSON body parsing middleware
+// ✅ Apply CORS middleware at the top
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+app.use(express.json()); // JSON body parser
 
 async function startServer() {
   try {
-    const db = await connectToDb()
+    const db = await connectToDb();
 
-    // pass db to routes as middleware or using app locals
+    // Attach DB to req
     app.use((req, res, next) => {
-      req.db = db
-      next()
-    })
+      req.db = db;
+      next();
+    });
 
-    // use the config routes under /configurations path
-    app.use('/configurations', configRoutes)
+    // API routes
+    app.use('/configurations', configRoutes);
 
+    // Test route
     app.get('/', (req, res) => {
-      res.send('Hello World!')
-    })
+      console.log("Root endpoint hit");
+      res.send('Hello World!');
+    });
 
+    // Start server
     app.listen(port, () => {
-      console.log(`App listening on port ${port}`)
-    })
+      console.log(`✅ App listening on http://localhost:${port}`);
+    });
+
   } catch (err) {
-    console.error('Failed to connect to DB', err)
+    console.error('❌ Failed to connect to DB', err);
   }
 }
 
-startServer()
+startServer();

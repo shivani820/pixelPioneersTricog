@@ -12,7 +12,7 @@ const DoctorAppointment = (chatId, slots) => {
   const onChangeDate = (values) => {
     console.log("Form Values:", values);
     // Here you can handle form submission, e.g., send data to backend
-    axios.get(`${process.env.REACT_APP_URL}/api/fetch-slots`, {
+    axios.get(`${process.env.REACT_APP_URL}/configurations/fetchSlots`, {
           chatId,
           ...values,
         }, { withCredentials: true })
@@ -45,7 +45,7 @@ const DoctorAppointment = (chatId, slots) => {
   const onFinish = (values) => {
     console.log("Form Values:", values);
     // Here you can handle form submission, e.g., send data to backend
-    axios.post(`${process.env.REACT_APP_URL}/api/book-appointment`, {
+    axios.post(`${process.env.REACT_APP_URL}/configurations/book-appointment`, {
           chatId,
           ...values,
         },{ withCredentials: true })
