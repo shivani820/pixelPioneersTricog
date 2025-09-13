@@ -12,6 +12,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mongodb": "^6.19.0"
+    "mongodb": "^6.19.0",
+    "natural": "^8.1.0",
+    "@google/genai": "^1.19.0",
+    "@mistralai/mistralai": "^1.10.0"
   }
 }
