@@ -12,6 +12,7 @@ const Chatbot = () => {
   const [userData, setUserData] = useState({ name: '', email: '', symptoms: '' });
   const [error, setError] = useState('');
   const [generatedId, setGeneratedId] = useState(null); // State to hold the generated ID
+  const [symptoms, setSymptoms] = useState([]); // State to hold the generated ID
 
   const getInsertedId = async () => {
   try {
@@ -54,7 +55,7 @@ const Chatbot = () => {
       return;
     }
 
-    message.success(response);
+    message.success(response?.data);
     console.log("✅ AI Name Response:", response);
     return response.data;
 
@@ -63,6 +64,46 @@ const Chatbot = () => {
     message.error('Error fetching name from AI');
   }
 };
+
+
+const fetchASymptoms = async (payload) => {
+   try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_URL}/configurations/symptomsCheck`,
+      payload, // ✅ This is the request body
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response?.status !== 200) {
+      message.error(response);
+      return;
+    }
+    console.log(response?.data)
+    message.success(response?.data);
+    setSymptoms(response?.data);
+    if (response?.data.length > 0) {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          text: <MultiSelectSymptomsCheckboxForm generatedId={generatedId} symptomsss={response?.data} show={true} />,
+          sender: 'bot',
+        },
+      ]);
+    }
+    console.log("✅ AI Name Response:", response?.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('❌ Error fetching symptoms:', error);
+    message.error('Error fetching symptoms from AI');
+  }
+}
+
 
 
 const getAiEmail = async (payload) => {
@@ -79,7 +120,7 @@ const getAiEmail = async (payload) => {
     );
 
     if (response?.status !== 200) {
-      message.error(response);
+      message.error(response?.data);
       return;
     }
 
@@ -128,7 +169,8 @@ const getAiEmail = async (payload) => {
        case 2:
         // No specific validation needed for symptoms, as it's free-form text
         setUserData({ ...userData, symptoms: input });
-        setMessages((prevMessages) => [...prevMessages, { text: <MultiSelectSymptomsCheckboxForm generatedId={generatedId} />, sender: 'bot' }]);
+        fetchASymptoms({ symptoms: input, generatedId: generatedId });
+        setMessages((prevMessages) => [...prevMessages, { text: <MultiSelectSymptomsCheckboxForm generatedId={generatedId} symptomsss={symptoms} />, sender: 'bot' }]);
         setStep(3);
         console.log('Final Data:', { ...userData, symptoms: input });
         break;

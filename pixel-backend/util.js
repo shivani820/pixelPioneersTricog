@@ -62,7 +62,8 @@ function getSymptoms(text){
         const tokens = tokenizer.tokenize(text);
         return tokens;
     }
-    //getSymptoms("Hello, I had fracture");
+    user = getSymptoms("Hello, I had heart attack 2 years back. I am experiencing chest pain and shortness of breath.");
+    console.log(user);
     
 function getUserNameFromText(text){
     userName = generateTextWithMistral("Extract the name of the user from this text: "+text+". If no name is present, return 'null' string with no other text.");
@@ -76,4 +77,4 @@ function getUserEmailFromText(text){
     console.log("\n\n\n"+userEmail);
 }
 
-useremail = getUserEmailFromText("Hello, my email id is abc");
+//sueremail = getUserEmailFromText("Hello, my email id is abc");
