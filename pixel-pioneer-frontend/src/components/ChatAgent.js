@@ -36,15 +36,67 @@ const Chatbot = () => {
   }
 };
 
+ const getAiName = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_URL}/configurations/name`,
+      payload, // ✅ This is the request body
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response?.status !== 200) {
+      message.error(response);
+      return;
+    }
+
+    message.success(response);
+    console.log("✅ AI Name Response:", response);
+    return response.data;
+
+  } catch (error) {
+    console.error('❌ Error fetching AI name:', error);
+    message.error('Error fetching name from AI');
+  }
+};
+
+
+const getAiEmail = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_URL}/configurations/email`,
+      payload, // ✅ This is the request body
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response?.status !== 200) {
+      message.error(response);
+      return;
+    }
+
+    message.success(response);
+    console.log("✅ AI Name Response:", response);
+    return response.data;
+
+  } catch (error) {
+    console.error('❌ Error fetching AI name:', error);
+    message.error('Error fetching name from AI');
+  }
+};
+
 
   const validateName = (name) => {
     const regex = /^[a-zA-Z\s]+$/;
     return regex.test(name.trim());
-  };
-
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
   };
 
   const handleSendMessage = (e) => {
@@ -59,6 +111,7 @@ const Chatbot = () => {
       case 0:
         if (validateName(input)) {
           setUserData({ ...userData, name: input });
+          getAiName({ name: input});
           setMessages((prevMessages) => [...prevMessages, { text: `Hello, ${input}! What is your email address?`, sender: 'bot' }]);
           setStep(1);
         } else {
@@ -67,14 +120,10 @@ const Chatbot = () => {
         }
         break;
       case 1:
-        if (validateEmail(input)) {
           setUserData({ ...userData, email: input });
+          getAiEmail({ email: input});
           setMessages((prevMessages) => [...prevMessages, { text: 'Thank you. Please list your main symptoms (e.g., chest pain, shortness of breath, fatigue).', sender: 'bot' }]);
           setStep(2);
-        } else {
-          setError('Please enter a valid email address.');
-          setMessages((prevMessages) => [...prevMessages, { text: 'That email format is invalid. Please enter a correct email address.', sender: 'bot' }]);
-        }
         break;
        case 2:
         // No specific validation needed for symptoms, as it's free-form text

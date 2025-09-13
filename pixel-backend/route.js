@@ -1,4 +1,6 @@
-const express = require('express')
+const express = require('express');
+const { getUserNameFromText } = require('./util');
+const { generateTextWithMistral } = require('./check');
 const router = express.Router()
 
 // GET /configurations to fetch the slots
@@ -46,6 +48,36 @@ router.post('/generateId', async (req, res) => {
     const newConfig = req.body
     const result = await db.collection('configuration').insertOne(newConfig)
     res.status(200).json(result.insertedId);
+    return res;
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add configuration' })
+    return res;
+  }
+})
+
+
+router.post('/name', async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log("Extract the name of the user from this text: "+req.body.name+". If no name is present, return 'null' string with no other text.")
+    userName = await generateTextWithMistral("Extract the name of the user from this text: "+req.body.name+". If no name is present, return 'null' string with no other text.");
+    console.log(userName);
+    res.status(200).json(userName);
+    return res;
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add configuration' })
+    return res;
+  }
+})
+
+
+router.post('/email', async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log("Extract the email id of the user from this text: "+req.body.email+". If no email id in proper format is present, return 'null' string with no other text.")
+    userEmail= await generateTextWithMistral("Extract the email id of the user from this text: "+req.body.email+". If no email id in proper format is present, return 'null' string with no other text.");
+    console.log(userEmail);
+    res.status(200).json(userEmail);
     return res;
   } catch (err) {
     res.status(500).json({ error: 'Failed to add configuration' })
