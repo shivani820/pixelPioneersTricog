@@ -1,27 +1,22 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-// GET /configurations
-router.get('/', async (req, res) => {
-  try {
-    const db = req.db
-    const data = await db.collection('configuration').find({}).toArray()
-    res.json(data)
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch configurations' })
+// POST /add-user
+router.post('/add-user', async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
   }
-})
 
-// POST /configurations
-router.post('/', async (req, res) => {
   try {
-    const db = req.db
-    const newConfig = req.body
-    const result = await db.collection('configuration').insertOne(newConfig)
-    res.status(201).json(result)
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to add configuration' })
+    const userCollection = req.db.collection('users'); // Replace 'users' with your collection name
+    const result = await userCollection.insertOne({ name });
+    res.status(201).json({ message: 'User added successfully', userId: result.insertedId });
+  } catch (error) {
+    console.error('Error inserting user:', error);
+    res.status(500).json({ error: 'Failed to add user' });
   }
-})
+});
 
-module.exports = router
+module.exports = router;
