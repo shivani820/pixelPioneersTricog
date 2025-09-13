@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Chatbot.css';
+import DoctorAppointment from '../DoctorAppointment/doctor-appointment';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -52,6 +53,13 @@ const Chatbot = () => {
         setMessages((prevMessages) => [...prevMessages, { text: 'Thank you for providing your symptoms. A medical agent will be with you shortly.', sender: 'bot' }]);
         setStep(3);
         console.log('Final Data:', { ...userData, symptoms: input });
+        break;
+      case 3:
+        // No specific validation needed for symptoms, as it's free-form text
+        setUserData({ ...userData, doctorAppointment: input });
+        setMessages((prevMessages) => [...prevMessages, { text: <DoctorAppointment/>, sender: 'bot' }]);
+        setStep(4);
+        console.log('Final Data:', { ...userData, doctorAppointment: input });
         break;
       default:
         setMessages((prevMessages) => [...prevMessages, { text: 'How can I help you?', sender: 'bot' }]);
