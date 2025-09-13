@@ -1,5 +1,6 @@
-import { Form, Typography, DatePicker, Select, Button } from "antd";
+import { Form, Typography, DatePicker, Select, Button, Row, Col } from "antd";
 import generateSlots from "../AvailableSlots/slot";
+import axios from "axios";
 
 const DoctorAppointment = (chatId, slots) => {
   const { Option } = Select;

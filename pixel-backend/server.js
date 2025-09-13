@@ -10,8 +10,7 @@ import { MongoClient } from "mongodb";
       // You can now access the database and collections
       const db = client.db("doctor-database");
       // ... perform operations
-      const data = await db.collection("configuration").find({}).toArray();
-      console.log(data);
+      return db;
     } finally {
       // await client.close();
       console.log("Connect is running");
